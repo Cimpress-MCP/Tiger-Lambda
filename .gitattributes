@@ -1,0 +1,6 @@
+*                         text=auto
+.gitattributes            eol=lf
+.gitignore                eol=lf
+*.cs                      diff=csharp
+*.sln                     eol=crlf merge=union
+*.csproj                  eol=crlf merge=union
