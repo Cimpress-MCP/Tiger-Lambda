@@ -6,29 +6,15 @@ Tiger.Lambda is a .NET library for simplifying the configuration and development
 
 ## Why You Want It
 
-Even a non-complicated AWS Lambda Function can quickly gain a tedious amount of setup. An `HttpClient` requires a set of `DelegatingHandlers`, each of which requires its own set of dependencies, some of which are `IOptions<TOptions>`, and didn't Microsoft just release a library to _simplify_ HttpClient?
+Even a non-complicated AWS Lambda Function can quickly gain a tedious amount of setup. An `HttpClient` requires a set of `DelegatingHandler`s, each of which requires its own set of dependencies, some of which are `IOptions<TOptions>`, and didn't Microsoft just release a library to _simplify_ HttpClient?
 
 Tiger.Lambda provides a host very similar to the `WebHost` of ASP.NET Core, allowing the application to be configured in all the ways familiar to an ASP.NET Core developer. The most common actions are exposed as overrideable methods on the Function handler. Even appsettings files are supported.
 
-## How You Develop It
+## Specializations
 
-This project is using the standard [`dotnet`] build tool. A brief primer:
+Currently, the library features a specialization for use in AWS Step Functions. These unavoidably have a form of exceptions-as-flow-control, and any asynchronous Lambda Function would break this by only being able to throw `AggregateException`. The Step Functions specialization manages the async context so that state machines work as intended.
 
-[`dotnet`]: https://dot.net
-
-- Restore NuGet dependencies: `dotnet restore`
-- Build the entire solution: `dotnet build`
-- Run all unit tests: `dotnet test`
-- Pack for publishing: `dotnet pack -o "$(pwd)/dist"`
-
-The parameter `--configuration` (shortname `-c`) can be supplied to the `build`, `test`, and `pack` steps with the following meaningful values:
-
-- “Debug” (the default)
-- “Release”
-
-This repository is attempting to use the [GitFlow] branching methodology. Results may be mixed, please be aware.
-
-[GitFlow]: http://jeffkreeftmeijer.com/2010/why-arent-you-using-git-flow/
+Further specializations are planned, and await implementation experience.
 
 ## Thank You
 
