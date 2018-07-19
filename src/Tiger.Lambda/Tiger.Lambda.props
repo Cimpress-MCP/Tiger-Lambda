@@ -1,0 +1,22 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- note(cosborn) Enables certain kinds of static analyzer. -->
+    <Features>IOperation</Features>
+    <LangVersion>latest</LangVersion>
+    <DebugType>portable</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <Deterministic>true</Deterministic>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <!-- note(cosborn) whips and chains -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <None Update="appsettings.json" CopyToOutputDirectory="Always" />
+    <None Update="appsettings.*.json" DependentUpon="appsettings.json" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+ 
+</Project>
