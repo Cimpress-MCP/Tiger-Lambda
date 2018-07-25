@@ -1,0 +1,8 @@
+<Project>
+
+  <ItemGroup>
+    <None Update="appsettings.json" CopyToOutputDirectory="Always" />
+    <None Update="appsettings.*.json" DependentUpon="appsettings.json" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+ 
+</Project>

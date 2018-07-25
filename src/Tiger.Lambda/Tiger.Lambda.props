@@ -12,11 +12,5 @@
     <!-- note(cosborn) whips and chains -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-
-
-  <ItemGroup>
-    <None Update="appsettings.json" CopyToOutputDirectory="Always" />
-    <None Update="appsettings.*.json" DependentUpon="appsettings.json" CopyToOutputDirectory="Always" />
-  </ItemGroup>
  
 </Project>
