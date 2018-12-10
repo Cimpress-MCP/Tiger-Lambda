@@ -6,15 +6,58 @@ Tiger.Lambda is a .NET library for simplifying the configuration and development
 
 ## Why You Want It
 
-Even a non-complicated AWS Lambda Function can quickly gain a tedious amount of setup. An `HttpClient` requires a set of `DelegatingHandler`s, each of which requires its own set of dependencies, some of which are `IOptions<TOptions>`, and didn't Microsoft just release a library to _simplify_ HttpClient?
+Even a non-complicated AWS Lambda Function can quickly gain a tedious amount of setup.
+An `HttpClient` requires a set of `DelegatingHandler`s,
+each of which requires its own set of dependencies,
+some of which are `IOptions<TOptions>`,
+and didn't Microsoft just release a library to _simplify_ HttpClient?
 
-Tiger.Lambda provides a host very similar to the `WebHost` of ASP.NET Core, allowing the application to be configured in all the ways familiar to an ASP.NET Core developer. The most common actions are exposed as overrideable methods on the Function handler. Even appsettings files are supported.
+Tiger.Lambda provides a host very similar to the `WebHost` of ASP.NET Core,
+allowing the application to be configured in all the ways familiar to an ASP.NET Core developer.
+The most common actions are exposed as overrideable methods on the Function handler.
+Even appsettings files are supported.
 
-## Specializations
+## How To Use It
 
-Currently, the library features a specialization for use in AWS Step Functions. These unavoidably have a form of exceptions-as-flow-control, and any asynchronous Lambda Function would break this by only being able to throw `AggregateException`. The Step Functions specialization manages the async context so that state machines work as intended.
+The concept of a function handler is exposed to dependency injection as a type `IHandler<TIn, TOut>`.
+This handler's `Task<TOut> HandleAsync(TIn,ILambdaContext)` method will be called after asking DI for an instance satisfying `IHandler<TIn, TOut>`.
+The following _extremely simplified_ example illustrates a basic setup.
 
-Further specializations are planned, and await implementation experience.
+```csharp
+namespace Example
+{
+  public sealed class PerformAction
+    : Function<string, int>
+  {
+    public override void ConfigureServices(HostBuilderContext context, IServiceCollection services) => services
+      .AddSingleton<IValueGetter, HttpValueGetter>()
+      .AddScoped<IHandler<string, int>, Handler>();
+
+    // This may of course exist in another file, if desired.
+    public sealed class Handler
+      : IHandler<string, int>
+    {
+      readonly IValueGetter _valueGetter;
+
+      public Handler(IValueGetter valueGetter)
+      {
+        _valueGetter = valueGetter;
+      }
+
+      public async Task<int> HandleAsync(string input, ILambdaContext context)
+      {
+        var value = await _valueGetter.GetValue(input).ConfigureAwait(false);
+
+        return value;
+      }
+    }
+  }
+}
+```
+
+The lambda's entry point is the `Task<TOut> HandleAsync(TIn,ILambdaContext)` method of the class inheriting from `Function<TIn, TOut>`.
+This can be set in Lambda configuration in the usual fashion.
+For the example above, it would resemble "Documentation::Example.PerformAction::HandleAsync".
 
 ## Thank You
 
