@@ -12,8 +12,8 @@
     <PackageId>Tiger.Lambda</PackageId>
     <PackageTags>lambda;host;aws;amazon;lambda-function</PackageTags>
     <PackageReleaseNotes><![CDATA[➟ Release 2.0.0
-⁃ AWS Secrets Manager support has been upstreamed. See `LambdaHost.CreateSecretsBuilder()`.
-⁃ Special support for AWS Step Functions has been removed. For async exception support, investigate using the `UNWRAP_AGGREGATE_EXCEPTIONS` environment variable.
+⁃ AWS Secrets Manager support has been integrated. See `LambdaHost.CreateSecretsBuilder()`.
+⁃ Special support for AWS Step Functions has been upstreamed. For async exception support, investigate using the `UNWRAP_AGGREGATE_EXCEPTIONS` environment variable.
 ]]></PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/Cimpress-MCP/Tiger-Lambda</PackageProjectUrl>
     <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
