@@ -14,6 +14,7 @@
 //   limitations under the License.
 // </copyright>
 
+using System;
 using System.IO;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
@@ -32,23 +33,46 @@ namespace Tiger.Lambda
         /// </summary>
         /// <returns>The initialized <see cref="IHostBuilder"/>.</returns>
         [NotNull]
-        public static IHostBuilder CreateDefaultBuilder()
+        public static IHostBuilder CreateDefaultBuilder() => WrapBuilder((hostingContext, config) =>
         {
-            return new HostBuilder()
-                .ConfigureHostConfiguration(config => config.AddEnvironmentVariables(prefix: "LAMBDA_"))
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    var env = hostingContext.HostingEnvironment;
+            var env = hostingContext.HostingEnvironment;
 
-                    config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+            config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
-                    // todo(cosborn) User secrets are currently impossible due to a lack of HOME environment variable.
-                    config.AddEnvironmentVariables();
-                })
-                .UseDefaultServiceProvider((context, options) =>
-                    options.ValidateScopes = context.HostingEnvironment.IsDevelopment());
-        }
+            // todo(cosborn) User secrets are currently impossible due to a lack of HOME environment variable.
+            config.AddEnvironmentVariables();
+        });
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HostBuilder"/> class with pre-configured defaults
+        /// and Secrets Manager support.
+        /// </summary>
+        /// <returns>The initialized <see cref="IHostBuilder"/>.</returns>
+        [NotNull]
+        public static IHostBuilder CreateSecretsBuilder() => WrapBuilder((hostingContext, config) =>
+        {
+            var env = hostingContext.HostingEnvironment;
+
+            config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
+            /* note(cosborn)
+             * By putting the secrets manager configuration source here in the stack, the values
+             * retrieved from it can be overridden by user secrets or environment variables
+             * when developing.
+             */
+            config.AddAWSSecretsManager(env.EnvironmentName);
+
+            // todo(cosborn) User secrets are currently impossible due to a lack of HOME environment variable.
+            config.AddEnvironmentVariables();
+        });
+
+        [NotNull]
+        static IHostBuilder WrapBuilder([NotNull] Action<HostBuilderContext, IConfigurationBuilder> configureDelegate) => new HostBuilder()
+            .ConfigureHostConfiguration(config => config.AddEnvironmentVariables(prefix: "LAMBDA_"))
+            .UseContentRoot(Directory.GetCurrentDirectory())
+            .ConfigureAppConfiguration(configureDelegate)
+            .UseDefaultServiceProvider((context, options) => options.ValidateScopes = context.HostingEnvironment.IsDevelopment());
     }
 }
