@@ -1,3 +1,8 @@
+### What's new in 2.0.1 (Released 2019-02-08)
+
+* An alternative key delimiter for Secrets Manager secrets has been introduced.
+  * If a secret needs to be referenced in a CloudFormation dynamic reference, a double-underscore (__, or "dunder") may be used in lieu of colon (:).
+
 ### What's new in 2.0.0 (Released 2018-12-11)
 
 * AWS Secrets Manager support has been integrated. See `LambdaHost.CreateSecretsBuilder()`.
