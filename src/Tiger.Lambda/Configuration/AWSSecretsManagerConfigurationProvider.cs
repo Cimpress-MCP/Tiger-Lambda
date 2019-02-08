@@ -17,12 +17,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Threading.Tasks;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using JetBrains.Annotations;
 using Newtonsoft.Json.Linq;
-using static System.Globalization.CultureInfo;
+using static Microsoft.Extensions.Configuration.ConfigurationPath;
 
 namespace Microsoft.Extensions.Configuration
 {
@@ -30,6 +31,8 @@ namespace Microsoft.Extensions.Configuration
     public sealed class AWSSecretsManagerConfigurationProvider
         : ConfigurationProvider
     {
+        const string AlternativeKeyDelimiter = "__";
+
         readonly IAmazonSecretsManager _client;
         readonly string _secretId;
 
@@ -124,7 +127,7 @@ namespace Microsoft.Extensions.Configuration
                      * Remember, configuration considers arrays to be objects with "numeric" indices.
                      * That's why they merge how they do in AppSettings.
                      */
-                    VisitToken(array[i], context.Add(i.ToString(InvariantCulture)));
+                    VisitToken(array[i], context.Add(i.ToString(CultureInfo.InvariantCulture)));
                 }
             }
 
@@ -147,10 +150,13 @@ namespace Microsoft.Extensions.Configuration
 
             void VisitValue(JValue value, ImmutableArray<string> context)
             {
-                var key = ConfigurationPath.Combine(context);
+                var key = NormalizeKey(Combine(context));
 
                 // note(cosborn) If you create JSON with duplicate keys, you get what you get.
-                data[key] = value.ToString(InvariantCulture);
+                data[key] = value.ToString(CultureInfo.InvariantCulture);
+
+                // note(cosborn) Colons put into Secrets Manager keys can't always be extracted.
+                string NormalizeKey(string k) => k.Replace(AlternativeKeyDelimiter, KeyDelimiter, StringComparison.Ordinal);
             }
         }
     }
