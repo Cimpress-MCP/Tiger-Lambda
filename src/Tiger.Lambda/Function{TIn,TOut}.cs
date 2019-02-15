@@ -15,6 +15,7 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using JetBrains.Annotations;
@@ -55,20 +56,24 @@ namespace Tiger.Lambda
                     throw new InvalidOperationException(HandlerIsMisconfigured, ioe);
                 }
 
-                try
-                {
-                    return await handler.HandleAsync(input, context).ConfigureAwait(false);
-                }
-                catch (Exception e)
-                {
-                    // note(cosborn) Log a nice message if we can.
-                    var logger = scope.ServiceProvider.GetService<ILogger<Function<TIn, TOut>>>();
-                    using (logger?.BeginScope(context))
-                    {
-                        logger?.LogError(e, UnhandledException, GetType());
-                    }
+                var logger = scope.ServiceProvider.GetService<ILogger<Function<TIn, TOut>>>();
 
-                    throw;
+                using (logger?.BeginScope(new Dictionary<string, object>
+                {
+                    [nameof(ILambdaContext.AwsRequestId)] = context.AwsRequestId
+                }))
+                {
+                    try
+                    {
+                        return await handler.HandleAsync(input, context).ConfigureAwait(false);
+                    }
+                    catch (Exception e)
+                    {
+                        // note(cosborn) Log a nice message if we can.
+                        logger?.LogError(e, UnhandledException, GetType());
+
+                        throw;
+                    }
                 }
             }
         }
