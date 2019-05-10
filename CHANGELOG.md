@@ -1,3 +1,7 @@
+### What's new in 2.0.3 (Released 2019-05-11)
+
+* Secrets Manager support now comes from an external library, Tiger.Secrets.
+
 ### What's new in 2.0.2 (Released 2019-02-15)
 
 * The AWS Request ID is added to the top level logging scope, if scopes are enabled.
