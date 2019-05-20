@@ -4,14 +4,17 @@
     <Description>Simplifies the configuration and initialization of AWS Lambda Functions.</Description>
     <Copyright>©Cimpress 2018</Copyright>
     <AssemblyTitle>Tiger Lambda</AssemblyTitle>
-    <VersionPrefix>2.0.2</VersionPrefix>
+    <VersionPrefix>2.0.3</VersionPrefix>
     <Authors>cosborn@cimpress.com</Authors>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <CodeAnalysisRuleSet>../../Tiger.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>Tiger.Lambda</AssemblyName>
     <PackageId>Tiger.Lambda</PackageId>
     <PackageTags>lambda;host;aws;amazon;lambda-function</PackageTags>
-    <PackageReleaseNotes><![CDATA[➟ Release 2.0.2
+    <PackageReleaseNotes><![CDATA[➟ Release 2.0.3
+⁃ Secrets Manager support now comes from an external library, Tiger.Secrets.
+
+➟ Release 2.0.2
 ⁃ The AWS Request ID is added to the top level logging scope, if scopes are enabled.
 
 ➟ Release 2.0.1
@@ -43,19 +46,13 @@
 
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.Core" Version="1.1.0" />
-    <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.3.6" />
-    <PackageReference Include="AWSSDK.SecretsManager" Version="3.3.2.44" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.1.1" />
+    <PackageReference Include="Tiger.Secrets" Version="1.1.0" />
 
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.6.3" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.CodeQuality.Analyzers" Version="2.6.3" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.NetCore.Analyzers" Version="2.6.3" PrivateAssets="All" />
-    <PackageReference Include="Roslynator.Analyzers" Version="2.0.0" PrivateAssets="All" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.1-rc.94" PrivateAssets="All" />
-    <PackageReference Include="Text.Analyzers" Version="2.6.3" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.2" PrivateAssets="All" />
+    <PackageReference Include="Roslynator.Analyzers" Version="2.1.0-rc" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
