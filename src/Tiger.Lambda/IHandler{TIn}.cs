@@ -1,4 +1,4 @@
-// <copyright file="IHandler{TIn,TOut}.cs" company="Cimpress, Inc.">
+// <copyright file="IHandler{TIn}.cs" company="Cimpress, Inc.">
 //   Copyright 2020 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
@@ -21,11 +21,10 @@ using Amazon.Lambda.Core;
 namespace Tiger.Lambda
 {
     /// <summary>
-    /// Handles AWS Lambda Function invocations which return a value.
+    /// Handles AWS Lambda Function invocations which perform an action.
     /// </summary>
     /// <typeparam name="TIn">The type of the input to the Function.</typeparam>
-    /// <typeparam name="TOut">The type of the output from the Function.</typeparam>
-    public interface IHandler<TIn, TOut>
+    public interface IHandler<TIn>
     {
         /// <summary>
         /// Handles an AWS Lambda Function invocation which returns a value.
@@ -33,8 +32,8 @@ namespace Tiger.Lambda
         /// <param name="input">The input to the Function.</param>
         /// <param name="context">The context of this execution of the Function.</param>
         /// <returns>
-        /// A task which, when resolved, results in the output from the Function.
+        /// A task which, when resolved, represents completion of the Function.
         /// </returns>
-        Task<TOut> HandleAsync([DisallowNull] TIn input, ILambdaContext context);
+        Task HandleAsync([DisallowNull] TIn input, ILambdaContext context);
     }
 }

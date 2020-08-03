@@ -2,68 +2,56 @@
 
   <PropertyGroup>
     <Description>Simplifies the configuration and initialization of AWS Lambda Functions.</Description>
-    <Copyright>©Cimpress 2018</Copyright>
+    <Copyright>©Cimpress 2020</Copyright>
     <AssemblyTitle>Tiger Lambda</AssemblyTitle>
-    <VersionPrefix>2.0.3</VersionPrefix>
+    <VersionPrefix>3.0.0</VersionPrefix>
     <Authors>cosborn@cimpress.com</Authors>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-    <CodeAnalysisRuleSet>../../Tiger.ruleset</CodeAnalysisRuleSet>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Nullable>enable</Nullable>
     <AssemblyName>Tiger.Lambda</AssemblyName>
     <PackageId>Tiger.Lambda</PackageId>
     <PackageTags>lambda;host;aws;amazon;lambda-function</PackageTags>
-    <PackageReleaseNotes><![CDATA[➟ Release 2.0.3
-⁃ Secrets Manager support now comes from an external library, Tiger.Secrets.
-
-➟ Release 2.0.2
-⁃ The AWS Request ID is added to the top level logging scope, if scopes are enabled.
-
-➟ Release 2.0.1
-⁃ An alternative key delimiter for Secrets Manager secrets has been introduced.
-  ⁃ If a secret needs to be referenced in a CloudFormation dynamic reference, a double-underscore (__, or "dunder") may be used in lieu of colon (:).
-
-➟ Release 2.0.0
-⁃ AWS Secrets Manager support has been integrated. See `LambdaHost.CreateSecretsBuilder()`.
-⁃ Special support for AWS Step Functions has been upstreamed. For async exception support, investigate using the `UNWRAP_AGGREGATE_EXCEPTIONS` environment variable.
+    <PackageReleaseNotes><![CDATA[➟ Release 3.0.0
+⁃ The library has been updated for .NET Core 3.1.
+⁃ System settings are now set via environment variables with the standard "DOTNET_" prefix, rather than "LAMBDA_".
 ]]></PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/Cimpress-MCP/Tiger-Lambda</PackageProjectUrl>
-    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/Cimpress-MCP/Tiger-Lambda/master/tiger_logo.png</PackageIconUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageIcon>./tiger_logo.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Cimpress-MCP/Tiger-Lambda.git</RepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
+  <Import Project="Tiger.Lambda.props" />
+
   <ItemGroup>
-    <AdditionalFiles Include="../../stylecop.json" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.6" />
+    <PackageReference Include="Tiger.Secrets" Version="2.0.1" />
+
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
+    <PackageReference Include="Roslynator.Analyzers" Version="2.3.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../tiger_logo.png" Pack="true" PackagePath="" />
     <Content Include="Tiger.Lambda.targets">
       <PackagePath>build/</PackagePath>
     </Content>
     <Content Include="Tiger.Lambda.props">
       <PackagePath>build/</PackagePath>
     </Content>
-  </ItemGroup>
-
-  <Import Project="Tiger.Lambda.props" />
-
-  <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="2.1.1" />
-    <PackageReference Include="Tiger.Secrets" Version="1.1.0" />
-
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.2" PrivateAssets="All" />
-    <PackageReference Include="Roslynator.Analyzers" Version="2.1.0-rc" PrivateAssets="All" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

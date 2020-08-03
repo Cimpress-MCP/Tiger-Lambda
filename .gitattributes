@@ -2,5 +2,5 @@
 .gitattributes            eol=lf
 .gitignore                eol=lf
 *.cs                      diff=csharp
-*.sln                     eol=crlf merge=union
-*.csproj                  eol=crlf merge=union
+*.sln                     merge=union
+*.csproj                  merge=union
