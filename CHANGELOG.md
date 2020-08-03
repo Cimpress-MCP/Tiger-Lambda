@@ -1,3 +1,12 @@
+### What's new in 3.0.0 (Released 2020-07-07)
+
+* The library has been updated for .NET Core 3.1.
+* System settings are now set via environment variables with the standard "DOTNET_" prefix, rather than "LAMBDA_".
+* (Dependency) The secret configuration now accepts a collection of secret IDs (probably ARNs) from which to read.
+  * It no longer accepts a "base ID".
+* (Administrivia) The project's code of conduct has been updated.
+* (Administrivia) The project main branch has been renamed `main`.
+
 ### What's new in 2.0.3 (Released 2019-05-11)
 
 * Secrets Manager support now comes from an external library, Tiger.Secrets.

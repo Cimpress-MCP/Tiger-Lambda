@@ -1,8 +1,6 @@
 <Project>
 
   <PropertyGroup>
-    <!-- note(cosborn) Enables certain kinds of static analyzer. -->
-    <Features>IOperation</Features>
     <LangVersion>latest</LangVersion>
     <DebugType>portable</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -11,6 +9,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <!-- note(cosborn) whips and chains -->
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Features>strict</Features>
   </PropertyGroup>
  
 </Project>

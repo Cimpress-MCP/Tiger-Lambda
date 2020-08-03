@@ -1,4 +1,4 @@
-// <copyright file="Function{TIn,TOut}.cs" company="Cimpress, Inc.">
+// <copyright file="Function{TIn}.cs" company="Cimpress, Inc.">
 //   Copyright 2020 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
@@ -27,11 +27,10 @@ namespace Tiger.Lambda
 {
     /// <summary>
     /// The base class and entry point of AWS Lambda Functions
-    /// which return a value.
+    /// which perform an action.
     /// </summary>
     /// <typeparam name="TIn">The type of the input to the Function.</typeparam>
-    /// <typeparam name="TOut">The type of the output from the Function.</typeparam>
-    public abstract class Function<TIn, TOut>
+    public abstract class Function<TIn>
         : Function
     {
         /// <summary>Handles Lambda Function invocations.</summary>
@@ -42,16 +41,16 @@ namespace Tiger.Lambda
         /// </returns>
         /// <exception cref="InvalidOperationException">The handler is misconfigured.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="context"/> is <see langword="null"/>.</exception>
-        public async Task<TOut> HandleAsync([DisallowNull] TIn input, ILambdaContext context)
+        public async Task HandleAsync([DisallowNull] TIn input, ILambdaContext context)
         {
             if (context is null) { throw new ArgumentNullException(nameof(context)); }
 
             using var scope = Host.Services.CreateScope();
 
-            IHandler<TIn, TOut> handler;
+            IHandler<TIn> handler;
             try
             {
-                handler = scope.ServiceProvider.GetRequiredService<IHandler<TIn, TOut>>();
+                handler = scope.ServiceProvider.GetRequiredService<IHandler<TIn>>();
             }
             catch (InvalidOperationException ioe)
             {
@@ -59,14 +58,14 @@ namespace Tiger.Lambda
                 throw new InvalidOperationException(HandlerIsMisconfigured, ioe);
             }
 
-            var logger = scope.ServiceProvider.GetService<ILogger<Function<TIn, TOut>>>();
+            var logger = scope.ServiceProvider.GetService<ILogger<Function<TIn>>>();
             using var @finally = logger?.BeginScope(new Dictionary<string, object>
             {
                 [nameof(ILambdaContext.AwsRequestId)] = context.AwsRequestId
             });
             try
             {
-                return await handler.HandleAsync(input, context).ConfigureAwait(false);
+                await handler.HandleAsync(input, context).ConfigureAwait(false);
             }
             catch (Exception e)
             {
