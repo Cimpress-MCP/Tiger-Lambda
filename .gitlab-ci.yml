@@ -1,32 +1,38 @@
-image: microsoft/dotnet:2.1-sdk-alpine
+image: mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
 
 stages:
-  - build
-  - pack
-  - deploy
+- build
+- pack
+- deploy
 
-cache:
-  key: "$CI_PIPELINE_ID"
+variables:
+  CONFIGURATION: Release
 
 build:
   stage: build
   script:
-    - dotnet build -c Release
-  artifacts:
-    untracked: true
+  - dotnet build
+  cache: &cache_template
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+    - ./src/*/bin/*
+    policy: push
 
 pack:
   stage: pack
   script:
-    - dotnet pack -c Release -o "$(pwd)/dist/"
+  - dotnet pack --output ./dist/
+  cache:
+    <<: *cache_template
+    policy: pull
   artifacts:
-    untracked: false
     paths:
-      - dist/
+    - ./dist/
 
 deploy:
   stage: deploy
   script:
-    - dotnet nuget push ./dist/*.nupkg -k $NUGET_API_KEY
+  - dotnet nuget push ./dist/*.nupkg --api-key "${NUGET_API_KEY}"
   only:
-    - master
+    refs:
+    - main

@@ -1,7 +1,7 @@
 // <copyright file="LambdaHost.cs" company="Cimpress, Inc.">
-//   Copyright 2017 Cimpress, Inc.
+//   Copyright 2020 Cimpress, Inc.
 //
-//   Licensed under the Apache License, Version 2.0 (the "License");
+//   Licensed under the Apache License, Version 2.0 (the "License") –
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
@@ -16,7 +16,6 @@
 
 using System;
 using System.IO;
-using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
@@ -32,16 +31,16 @@ namespace Tiger.Lambda
         /// Initializes a new instance of the <see cref="HostBuilder"/> class with pre-configured defaults.
         /// </summary>
         /// <returns>The initialized <see cref="IHostBuilder"/>.</returns>
-        [NotNull]
         public static IHostBuilder CreateDefaultBuilder() => WrapBuilder((hostingContext, config) =>
         {
             var env = hostingContext.HostingEnvironment;
 
-            config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+            _ = config
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
             // todo(cosborn) User secrets are currently impossible due to a lack of HOME environment variable.
-            config.AddEnvironmentVariables();
+            _ = config.AddEnvironmentVariables();
         });
 
         /// <summary>
@@ -49,30 +48,34 @@ namespace Tiger.Lambda
         /// and Secrets Manager support.
         /// </summary>
         /// <returns>The initialized <see cref="IHostBuilder"/>.</returns>
-        [NotNull]
         public static IHostBuilder CreateSecretsBuilder() => WrapBuilder((hostingContext, config) =>
         {
             var env = hostingContext.HostingEnvironment;
 
-            config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
+            _ = config
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true);
 
             /* note(cosborn)
              * By putting the secrets manager configuration source here in the stack, the values
              * retrieved from it can be overridden by user secrets or environment variables
              * when developing.
              */
-            config.AddAWSSecretsManager(env.EnvironmentName);
+            _ = config.AddSecretsManager();
 
             // todo(cosborn) User secrets are currently impossible due to a lack of HOME environment variable.
-            config.AddEnvironmentVariables();
+            _ = config.AddEnvironmentVariables();
         });
 
-        [NotNull]
-        static IHostBuilder WrapBuilder([NotNull] Action<HostBuilderContext, IConfigurationBuilder> configureDelegate) => new HostBuilder()
-            .ConfigureHostConfiguration(config => config.AddEnvironmentVariables(prefix: "LAMBDA_"))
+        static IHostBuilder WrapBuilder(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate) => new HostBuilder()
             .UseContentRoot(Directory.GetCurrentDirectory())
+            .ConfigureHostConfiguration(config => config.AddEnvironmentVariables(prefix: "DOTNET_"))
             .ConfigureAppConfiguration(configureDelegate)
-            .UseDefaultServiceProvider((context, options) => options.ValidateScopes = context.HostingEnvironment.IsDevelopment());
+            .UseDefaultServiceProvider((context, options) =>
+            {
+                var isDevelopment = context.HostingEnvironment.IsDevelopment();
+                options.ValidateScopes = isDevelopment;
+                options.ValidateOnBuild = isDevelopment;
+            });
     }
 }
