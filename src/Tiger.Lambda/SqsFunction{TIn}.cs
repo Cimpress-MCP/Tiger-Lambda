@@ -1,4 +1,4 @@
-// <copyright file="Function{TIn,TOut}.cs" company="Cimpress, Inc.">
+// <copyright file="SqsFunction{TIn}.cs" company="Cimpress, Inc.">
 //   Copyright 2020 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
@@ -15,43 +15,48 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.ExceptionServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
+using Amazon.Lambda.SQSEvents;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Tiger.Lambda
 {
     /// <summary>
     /// The base class and entry point of AWS Lambda Functions
-    /// which return a value.
+    /// which accept SQS events and perform an action.
     /// </summary>
-    /// <typeparam name="TIn">The type of the input to the Function.</typeparam>
-    /// <typeparam name="TOut">The type of the output from the Function.</typeparam>
-    public abstract class Function<TIn, TOut>
-        : Function
+    /// <typeparam name="TIn">
+    /// The type of the records of the input to the Function.
+    /// </typeparam>
+    public abstract class SqsFunction<TIn>
+        : Function<SQSEvent>
     {
-        /// <summary>Handles Lambda Function invocations.</summary>
-        /// <param name="input">The input to the Function.</param>
-        /// <param name="context">The context of this execution of the Function.</param>
-        /// <returns>
-        /// A task which, when resolved, results in the output from the Function.
-        /// </returns>
-        /// <exception cref="InvalidOperationException">The handler is misconfigured.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="context"/> is <see langword="null"/>.</exception>
-        public virtual async Task<TOut> HandleAsync([DisallowNull] TIn input, ILambdaContext context)
+        /// <inheritdoc/>
+        public override async Task HandleAsync([DisallowNull] SQSEvent input, ILambdaContext context)
         {
+            if (input is null) { throw new ArgumentNullException(nameof(input));}
             if (context is null) { throw new ArgumentNullException(nameof(context)); }
 
             using var scope = Host.Services.CreateScope();
-            var handler = scope.GetHandler<TIn, TOut>();
+            var handler = scope.GetHandler<IEnumerable<TIn>>();
 
             var logger = scope.GetLogger(GetType());
             using var @finally = logger?.Handling(context);
             try
             {
-                return await handler.HandleAsync(input, context).ConfigureAwait(false);
+                var jsonOpts = scope.ServiceProvider.GetService<IOptions<JsonSerializerOptions>>();
+                var records = input
+                    .Records
+                    .Select(r => r.Body)
+                    .Select(b => JsonSerializer.Deserialize<TIn>(b, jsonOpts?.Value));
+                await handler.HandleAsync(records, context).ConfigureAwait(false);
             }
             catch (Exception e)
             {
