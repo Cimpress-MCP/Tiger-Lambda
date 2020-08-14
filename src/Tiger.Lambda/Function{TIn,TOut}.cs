@@ -15,13 +15,11 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using static Tiger.Lambda.Properties.Resources;
 
 namespace Tiger.Lambda
 {
@@ -42,28 +40,15 @@ namespace Tiger.Lambda
         /// </returns>
         /// <exception cref="InvalidOperationException">The handler is misconfigured.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="context"/> is <see langword="null"/>.</exception>
-        public async Task<TOut> HandleAsync([DisallowNull] TIn input, ILambdaContext context)
+        public virtual async Task<TOut> HandleAsync([DisallowNull] TIn input, ILambdaContext context)
         {
             if (context is null) { throw new ArgumentNullException(nameof(context)); }
 
             using var scope = Host.Services.CreateScope();
+            var handler = scope.GetHandler<TIn, TOut>();
 
-            IHandler<TIn, TOut> handler;
-            try
-            {
-                handler = scope.ServiceProvider.GetRequiredService<IHandler<TIn, TOut>>();
-            }
-            catch (InvalidOperationException ioe)
-            {
-                // note(cosborn) Let's make the error message nicer.
-                throw new InvalidOperationException(HandlerIsMisconfigured, ioe);
-            }
-
-            var logger = scope.ServiceProvider.GetService<ILogger<Function<TIn, TOut>>>();
-            using var @finally = logger?.BeginScope(new Dictionary<string, object>
-            {
-                [nameof(ILambdaContext.AwsRequestId)] = context.AwsRequestId
-            });
+            var logger = scope.GetLogger(GetType());
+            using var @finally = logger?.Handling(context);
             try
             {
                 return await handler.HandleAsync(input, context).ConfigureAwait(false);
@@ -71,9 +56,9 @@ namespace Tiger.Lambda
             catch (Exception e)
             {
                 // note(cosborn) Log a nice message if we can.
-                logger?.LogError(e, UnhandledException, GetType());
-
-                throw;
+                logger?.UnhandledException(GetType(), e);
+                ExceptionDispatchInfo.Capture(e).Throw();
+                throw; // note(cosborn) Unreachable.
             }
         }
     }

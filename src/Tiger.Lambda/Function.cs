@@ -15,8 +15,8 @@
 // </copyright>
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,23 +27,10 @@ namespace Tiger.Lambda
     /// <summary>The base class and entry point of AWS Lambda Functions.</summary>
     public abstract class Function
     {
-        /// <summary>Initializes a new instance of the <see cref="Function"/> class.</summary>
-        [SuppressMessage("Microsoft.Usage", "CA2214", Justification = "No way out, in a Lambda Function.")]
-        protected Function()
-        {
-            var hostBuilder = CreateHostBuilder()
-                .ConfigureHostConfiguration(config => config.AddInMemoryCollection(new[]
-                {
-                    // todo(cosborn) Is it really impossible to set a single configuration key directly???
-                    KeyValuePair.Create(ApplicationKey, GetType().GetTypeInfo().Assembly.GetName().Name)
-                }));
-            Host = ConfigureHostBuilder(hostBuilder)
-                .ConfigureServices(ConfigureServices)
-                .Build();
-        }
+        IHost? _host;
 
         /// <summary>Gets the application host.</summary>
-        private protected IHost Host { get; }
+        internal IHost Host => LazyInitializer.EnsureInitialized(ref _host, InitializeHost);
 
         /// <summary>Creates the host builder for the application.</summary>
         /// <returns>A host builder.</returns>
@@ -52,8 +39,7 @@ namespace Tiger.Lambda
         /// <summary>Configures the host builder for the application.</summary>
         /// <param name="hostBuilder">The host builder.</param>
         /// <returns>The modified host builder.</returns>
-        public virtual IHostBuilder ConfigureHostBuilder(IHostBuilder hostBuilder) =>
-            hostBuilder;
+        public virtual IHostBuilder ConfigureHostBuilder(IHostBuilder hostBuilder) => hostBuilder;
 
         /// <summary>Adds services to the application dependency injection container.</summary>
         /// <param name="context">The context for building the application host.</param>
@@ -61,5 +47,18 @@ namespace Tiger.Lambda
         public abstract void ConfigureServices(
             HostBuilderContext context,
             IServiceCollection services);
+
+        IHost InitializeHost()
+        {
+            var hostBuilder = CreateHostBuilder()
+                .ConfigureHostConfiguration(config => config.AddInMemoryCollection(new[]
+                {
+                    // todo(cosborn) Is it really impossible to set a single configuration key directly???
+                    KeyValuePair.Create(ApplicationKey, GetType().GetTypeInfo().Assembly.GetName().Name)
+                }));
+            return ConfigureHostBuilder(hostBuilder)
+                .ConfigureServices(ConfigureServices)
+                .Build();
+        }
     }
 }
