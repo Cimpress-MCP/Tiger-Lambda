@@ -1,3 +1,7 @@
+### What's new in 3.1.0 (Released ????-??-??)
+
+* Special types have been added for handling SQS events serialized to JSON.
+
 ### What's new in 3.0.0 (Released 2020-07-07)
 
 * The library has been updated for .NET Core 3.1.
