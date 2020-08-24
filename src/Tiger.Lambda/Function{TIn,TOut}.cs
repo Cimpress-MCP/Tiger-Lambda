@@ -15,8 +15,9 @@
 // </copyright>
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,26 +41,49 @@ namespace Tiger.Lambda
         /// </returns>
         /// <exception cref="InvalidOperationException">The handler is misconfigured.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="context"/> is <see langword="null"/>.</exception>
-        public virtual async Task<TOut> HandleAsync([DisallowNull] TIn input, ILambdaContext context)
+        public async Task<TOut> HandleAsync([DisallowNull] TIn input, ILambdaContext context)
         {
             if (context is null) { throw new ArgumentNullException(nameof(context)); }
 
             using var scope = Host.Services.CreateScope();
-            var handler = scope.GetHandler<TIn, TOut>();
 
-            var logger = scope.GetLogger(GetType());
-            using var @finally = logger?.Handling(context);
+            var logger = scope.ServiceProvider.GetLogger(GetType());
+            using var handlingScope = logger?.Handling(context);
+
+            using var cts = new CancellationTokenSource(context.RemainingTime - CancellationLeadTime);
+            using var warningRegistration = cts.Token.RegisterWarning(logger);
+
             try
             {
-                return await handler.HandleAsync(input, context).ConfigureAwait(false);
+                return await HandleCoreAsync(
+                    input,
+                    context,
+                    scope.ServiceProvider,
+                    cts.Token).ConfigureAwait(false);
+            }
+            catch (TaskCanceledException tce)
+            {
+                _ = warningRegistration.Unregister();
+                logger?.Canceled(tce);
+                throw;
             }
             catch (Exception e)
             {
                 // note(cosborn) Log a nice message if we can.
                 logger?.UnhandledException(GetType(), e);
-                ExceptionDispatchInfo.Throw(e);
-                throw; // note(cosborn) Unreachable.
+                throw;
             }
+        }
+
+        [DebuggerHidden]
+        internal virtual Task<TOut> HandleCoreAsync(
+            [DisallowNull] TIn input,
+            ILambdaContext context,
+            IServiceProvider serviceProvider,
+            CancellationToken cancellationToken)
+        {
+            var handler = serviceProvider.GetHandler<TIn, TOut>();
+            return handler.HandleAsync(input, context, cancellationToken);
         }
     }
 }

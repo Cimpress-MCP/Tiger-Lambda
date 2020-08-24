@@ -15,8 +15,9 @@
 // </copyright>
 
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,36 +30,19 @@ namespace Tiger.Lambda
     /// </summary>
     /// <typeparam name="TIn">The type of the input to the Function.</typeparam>
     public abstract class Function<TIn>
-        : Function
+        : Function<TIn, object?>
     {
-        /// <summary>Handles Lambda Function invocations.</summary>
-        /// <param name="input">The input to the Function.</param>
-        /// <param name="context">The context of this execution of the Function.</param>
-        /// <returns>
-        /// A task which, when resolved, results in the output from the Function.
-        /// </returns>
-        /// <exception cref="InvalidOperationException">The handler is misconfigured.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="context"/> is <see langword="null"/>.</exception>
-        public virtual async Task HandleAsync([DisallowNull] TIn input, ILambdaContext context)
+        /// <inheritdoc/>
+        [DebuggerHidden]
+        internal override async Task<object?> HandleCoreAsync(
+            [DisallowNull] TIn input,
+            ILambdaContext context,
+            IServiceProvider serviceProvider,
+            CancellationToken cancellationToken)
         {
-            if (context is null) { throw new ArgumentNullException(nameof(context)); }
-
-            using var scope = Host.Services.CreateScope();
-            var handler = scope.GetHandler<TIn>();
-
-            var logger = scope.GetLogger(GetType());
-            using var @finally = logger?.Handling(context);
-            try
-            {
-                await handler.HandleAsync(input, context).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                // note(cosborn) Log a nice message if we can.
-                logger?.UnhandledException(GetType(), e);
-                ExceptionDispatchInfo.Throw(e);
-                throw; // note(cosborn) Unreachable.
-            }
+            var handler = serviceProvider.GetHandler<TIn>();
+            await handler.HandleAsync(input, context, cancellationToken).ConfigureAwait(false);
+            return default;
         }
     }
 }

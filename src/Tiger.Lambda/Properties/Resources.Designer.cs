@@ -77,5 +77,32 @@ namespace Tiger.Lambda.Properties {
                 return ResourceManager.GetString("UnhandledException", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Processing request {AwsRequestId}....
+        /// </summary>
+        public static string Handling {
+            get {
+                return ResourceManager.GetString("Handling", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Execution is nearly out of time!.
+        /// </summary>
+        public static string NearlyOutOfTime {
+            get {
+                return ResourceManager.GetString("NearlyOutOfTime", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Execution of request {AwsRequestId} has been canceled..
+        /// </summary>
+        public static string Canceled {
+            get {
+                return ResourceManager.GetString("Canceled", resourceCulture);
+            }
+        }
     }
 }

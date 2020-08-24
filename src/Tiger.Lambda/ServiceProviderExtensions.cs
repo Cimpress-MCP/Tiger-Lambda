@@ -1,4 +1,4 @@
-// <copyright file="ServiceScopeExtensions.cs" company="Cimpress, Inc.">
+// <copyright file="ServiceProviderExtensions.cs" company="Cimpress, Inc.">
 //   Copyright 2020 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
@@ -21,14 +21,14 @@ using static Tiger.Lambda.Properties.Resources;
 
 namespace Tiger.Lambda
 {
-    /// <summary>Extensions to the functionality of the <see cref="IServiceScope"/> interface.</summary>
-    static class ServiceScopeExtensions
+    /// <summary>Extensions to the functionality of the <see cref="IServiceProvider"/> interface.</summary>
+    static class ServiceProviderExtensions
     {
-        public static IHandler<TIn> GetHandler<TIn>(this IServiceScope scope)
+        public static IHandler<TIn> GetHandler<TIn>(this IServiceProvider serviceProvider)
         {
             try
             {
-                return scope.ServiceProvider.GetRequiredService<IHandler<TIn>>();
+                return serviceProvider.GetRequiredService<IHandler<TIn>>();
             }
             catch (InvalidOperationException ioe)
             {
@@ -37,11 +37,11 @@ namespace Tiger.Lambda
             }
         }
 
-        public static IHandler<TIn, TOut> GetHandler<TIn, TOut>(this IServiceScope scope)
+        public static IHandler<TIn, TOut> GetHandler<TIn, TOut>(this IServiceProvider serviceProvider)
         {
             try
             {
-                return scope.ServiceProvider.GetRequiredService<IHandler<TIn, TOut>>();
+                return serviceProvider.GetRequiredService<IHandler<TIn, TOut>>();
             }
             catch (InvalidOperationException ioe)
             {
@@ -50,7 +50,7 @@ namespace Tiger.Lambda
             }
         }
 
-        public static ILogger? GetLogger(this IServiceScope scope, Type type) =>
-            scope.ServiceProvider.GetService<ILoggerFactory>()?.CreateLogger(type);
+        public static ILogger? GetLogger(this IServiceProvider serviceProvider, Type type) =>
+            serviceProvider.GetService<ILoggerFactory>()?.CreateLogger(type);
     }
 }
