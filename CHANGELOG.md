@@ -1,5 +1,8 @@
-### What's new in 3.1.0 (Released ????-??-??)
+### What's new in 4.0.0 (Released ????-??-??)
 
+* Handlers now accept a cancellation token.
+  * The cancellation tokens are synthesized by the library; they will be canceled when approximately 500ms remain in the Function execution.
+  * This value is not yet configurable.
 * Special types have been added for handling SQS events serialized to JSON.
 
 ### What's new in 3.0.0 (Released 2020-07-07)

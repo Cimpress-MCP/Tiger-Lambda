@@ -15,6 +15,7 @@
 // </copyright>
 
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 
@@ -32,9 +33,13 @@ namespace Tiger.Lambda
         /// </summary>
         /// <param name="input">The input to the Function.</param>
         /// <param name="context">The context of this execution of the Function.</param>
+        /// <param name="cancellationToken">A token to wach for operation cancellation.</param>
         /// <returns>
         /// A task which, when resolved, results in the output from the Function.
         /// </returns>
-        Task<TOut> HandleAsync([DisallowNull] TIn input, ILambdaContext context);
+        Task<TOut> HandleAsync(
+            [DisallowNull] TIn input,
+            ILambdaContext context,
+            CancellationToken cancellationToken = default);
     }
 }

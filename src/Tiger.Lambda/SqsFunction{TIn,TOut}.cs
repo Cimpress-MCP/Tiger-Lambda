@@ -16,10 +16,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
@@ -40,32 +41,20 @@ namespace Tiger.Lambda
         : Function<SQSEvent, TOut>
     {
         /// <inheritdoc/>
-        public override async Task<TOut> HandleAsync(SQSEvent input, ILambdaContext context)
+        [DebuggerHidden]
+        internal sealed override Task<TOut> HandleCoreAsync(
+            [DisallowNull] SQSEvent input,
+            ILambdaContext context,
+            IServiceProvider serviceProvider,
+            CancellationToken cancellationToken)
         {
-            if (input is null) { throw new ArgumentNullException(nameof(input));}
-            if (context is null) { throw new ArgumentNullException(nameof(context)); }
-
-            using var scope = Host.Services.CreateScope();
-            var handler = scope.GetHandler<IEnumerable<TIn>, TOut>();
-
-            var logger = scope.GetLogger(GetType());
-            using var @finally = logger?.Handling(context);
-            try
-            {
-                var jsonOpts = scope.ServiceProvider.GetService<IOptions<JsonSerializerOptions>>();
-                var records = input
-                    .Records
-                    .Select(r => r.Body)
-                    .Select(b => JsonSerializer.Deserialize<TIn>(b, jsonOpts?.Value));
-                return await handler.HandleAsync(records, context).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                // note(cosborn) Log a nice message if we can.
-                logger?.UnhandledException(GetType(), e);
-                ExceptionDispatchInfo.Throw(e);
-                throw; // note(cosborn) Unreachable.
-            }
+            var handler = serviceProvider.GetHandler<IEnumerable<TIn>, TOut>();
+            var jsonOpts = serviceProvider.GetService<IOptions<JsonSerializerOptions>>();
+            var records = input
+                .Records
+                .Select(r => r.Body)
+                .Select(b => JsonSerializer.Deserialize<TIn>(b, jsonOpts?.Value));
+            return handler.HandleAsync(records, context, cancellationToken);
         }
     }
 }

@@ -125,4 +125,16 @@
     <value>Handler of {EntryType} threw an exception.</value>
     <comment>Used when an exception escapes a Lambda handler.</comment>
   </data>
+  <data name="Handling" xml:space="preserve">
+    <value>Processing request {AwsRequestId}...</value>
+    <comment>Wraps the actual handling of the event.</comment>
+  </data>
+  <data name="Canceled" xml:space="preserve">
+    <value>Execution of request has been canceled.</value>
+    <comment>Used when Function execution has been canceled due to time or any other reason.</comment>
+  </data>
+  <data name="NearlyOutOfTime" xml:space="preserve">
+    <value>Execution is nearly out of time!</value>
+    <comment>Used when Function execution is nearly out of execution time.</comment>
+  </data>
 </root>

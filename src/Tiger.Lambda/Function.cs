@@ -14,6 +14,7 @@
 //   limitations under the License.
 // </copyright>
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
@@ -27,6 +28,8 @@ namespace Tiger.Lambda
     /// <summary>The base class and entry point of AWS Lambda Functions.</summary>
     public abstract class Function
     {
+        internal static TimeSpan CancellationLeadTime = TimeSpan.FromMilliseconds(500);
+
         IHost? _host;
 
         /// <summary>Gets the application host.</summary>

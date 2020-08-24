@@ -26,12 +26,22 @@ namespace Tiger.Lambda
     static class LoggerExtensions
     {
         static readonly Func<ILogger, string, IDisposable> _handlingScope = LoggerMessage.DefineScope<string>(
-            "Processing request {AwsRequestId}...");
+            Resources.Handling);
 
         static readonly Action<ILogger, Type, Exception?> _unhandledException = LoggerMessage.Define<Type>(
             Error,
             new EventId(1, nameof(UnhandledException)),
             Resources.UnhandledException);
+
+        static readonly Action<ILogger, Exception?> _canceled = LoggerMessage.Define(
+            Error,
+            new EventId(2, nameof(Canceled)),
+            Resources.Canceled);
+
+        static readonly Action<ILogger, Exception?> _nearlyOutOfTime = LoggerMessage.Define(
+            Error,
+            new EventId(3, nameof(NearlyOutOfTime)),
+            Resources.NearlyOutOfTime);
 
         /// <summary>Creates a logging scope for handling a request.</summary>
         /// <param name="logger">An application logger.</param>
@@ -48,5 +58,19 @@ namespace Tiger.Lambda
         /// <param name="exception">The exception thrown as a result of handling's failure.</param>
         public static void UnhandledException(this ILogger logger, Type type, Exception exception) =>
             _unhandledException(logger, type, exception);
+
+        /// <summary>
+        /// Writes an error log message corresponding to the event of a Function's cancellation.
+        /// </summary>
+        /// <param name="logger">An application logger.</param>
+        /// <param name="exception">An exception which was the result of timing out.</param>
+        public static void Canceled(this ILogger logger, Exception? exception = null) =>
+            _canceled(logger, exception);
+
+        /// <summary>
+        /// Writes an error log message corresponding to the event of a Function's imminent termination.
+        /// </summary>
+        /// <param name="logger">An application logger.</param>
+        public static void NearlyOutOfTime(this ILogger logger) => _nearlyOutOfTime(logger, null);
     }
 }
