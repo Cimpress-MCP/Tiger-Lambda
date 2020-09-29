@@ -1,4 +1,4 @@
-// <copyright file="Function{TIn}.cs" company="Cimpress, Inc.">
+// <copyright file="SqsFunction{TIn,TOut}.cs" company="Cimpress, Inc.">
 //   Copyright 2020 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
@@ -15,34 +15,46 @@
 // </copyright>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
+using Amazon.Lambda.SQSEvents;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Tiger.Lambda
 {
     /// <summary>
     /// The base class and entry point of AWS Lambda Functions
-    /// which perform an action.
+    /// which accept SQS events and return a value.
     /// </summary>
-    /// <typeparam name="TIn">The type of the input to the Function.</typeparam>
-    public abstract class Function<TIn>
-        : Function<TIn, object?>
+    /// <typeparam name="TIn">
+    /// The type of the records of the input to the Function.
+    /// </typeparam>
+    /// <typeparam name="TOut">The type of the output from the Function.</typeparam>
+    public abstract class SqsFunction<TIn, TOut>
+        : Function<SQSEvent, TOut>
     {
         /// <inheritdoc/>
         [DebuggerHidden]
-        internal override async Task<object?> HandleCoreAsync(
-            [DisallowNull] TIn input,
+        internal sealed override Task<TOut> HandleCoreAsync(
+            [DisallowNull] SQSEvent input,
             ILambdaContext context,
             IServiceProvider serviceProvider,
             CancellationToken cancellationToken)
         {
-            var handler = serviceProvider.GetHandler<TIn>();
-            await handler.HandleAsync(input, context, cancellationToken).ConfigureAwait(false);
-            return default;
+            var handler = serviceProvider.GetHandler<IEnumerable<TIn>, TOut>();
+            var jsonOpts = serviceProvider.GetService<IOptions<JsonSerializerOptions>>();
+            var records = input
+                .Records
+                .Select(r => r.Body)
+                .Select(b => JsonSerializer.Deserialize<TIn>(b, jsonOpts?.Value));
+            return handler.HandleAsync(records, context, cancellationToken);
         }
     }
 }

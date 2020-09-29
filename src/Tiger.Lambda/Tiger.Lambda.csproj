@@ -4,14 +4,20 @@
     <Description>Simplifies the configuration and initialization of AWS Lambda Functions.</Description>
     <Copyright>©Cimpress 2020</Copyright>
     <AssemblyTitle>Tiger Lambda</AssemblyTitle>
-    <VersionPrefix>3.0.0</VersionPrefix>
+    <VersionPrefix>4.0.0</VersionPrefix>
     <Authors>cosborn@cimpress.com</Authors>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Nullable>enable</Nullable>
     <AssemblyName>Tiger.Lambda</AssemblyName>
     <PackageId>Tiger.Lambda</PackageId>
     <PackageTags>lambda;host;aws;amazon;lambda-function</PackageTags>
-    <PackageReleaseNotes><![CDATA[➟ Release 3.0.0
+    <PackageReleaseNotes><![CDATA[➟ Release 4.0.0
+⁃ Handlers now accept a cancellation token.
+  ⁃ The cancellation tokens are synthesized by the library; they will be canceled when appoximately 500ms remain in the Function execution.
+  ⁃ This value is not yet configurable.
+⁃ Special types have been added for handling SQS events serialized to JSON.
+
+➟ Release 3.0.0
 ⁃ The library has been updated for .NET Core 3.1.
 ⁃ System settings are now set via environment variables with the standard "DOTNET_" prefix, rather than "LAMBDA_".
 ]]></PackageReleaseNotes>
@@ -30,11 +36,12 @@
 
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.Core" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.6" />
+    <PackageReference Include="Amazon.Lambda.SQSEvents" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.7" />
     <PackageReference Include="Tiger.Secrets" Version="2.0.1" />
 
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
     <PackageReference Include="Roslynator.Analyzers" Version="2.3.0" PrivateAssets="all" />
   </ItemGroup>

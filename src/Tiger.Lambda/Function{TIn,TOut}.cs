@@ -15,13 +15,12 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using static Tiger.Lambda.Properties.Resources;
 
 namespace Tiger.Lambda
 {
@@ -48,33 +47,43 @@ namespace Tiger.Lambda
 
             using var scope = Host.Services.CreateScope();
 
-            IHandler<TIn, TOut> handler;
-            try
-            {
-                handler = scope.ServiceProvider.GetRequiredService<IHandler<TIn, TOut>>();
-            }
-            catch (InvalidOperationException ioe)
-            {
-                // note(cosborn) Let's make the error message nicer.
-                throw new InvalidOperationException(HandlerIsMisconfigured, ioe);
-            }
+            var logger = scope.ServiceProvider.GetLogger(GetType());
+            using var handlingScope = logger?.Handling(context);
 
-            var logger = scope.ServiceProvider.GetService<ILogger<Function<TIn, TOut>>>();
-            using var @finally = logger?.BeginScope(new Dictionary<string, object>
-            {
-                [nameof(ILambdaContext.AwsRequestId)] = context.AwsRequestId
-            });
+            using var cts = new CancellationTokenSource(context.RemainingTime - CancellationLeadTime);
+            using var warningRegistration = cts.Token.RegisterWarning(logger);
+
             try
             {
-                return await handler.HandleAsync(input, context).ConfigureAwait(false);
+                return await HandleCoreAsync(
+                    input,
+                    context,
+                    scope.ServiceProvider,
+                    cts.Token).ConfigureAwait(false);
+            }
+            catch (TaskCanceledException tce) when (tce.CancellationToken == cts.Token)
+            { // note(cosborn) Other timeouts can go into the catch-all handler.
+                _ = warningRegistration.Unregister();
+                logger?.Canceled(tce);
+                throw;
             }
             catch (Exception e)
             {
                 // note(cosborn) Log a nice message if we can.
-                logger?.LogError(e, UnhandledException, GetType());
-
+                logger?.UnhandledException(GetType(), e);
                 throw;
             }
+        }
+
+        [DebuggerHidden]
+        internal virtual Task<TOut> HandleCoreAsync(
+            [DisallowNull] TIn input,
+            ILambdaContext context,
+            IServiceProvider serviceProvider,
+            CancellationToken cancellationToken)
+        {
+            var handler = serviceProvider.GetHandler<TIn, TOut>();
+            return handler.HandleAsync(input, context, cancellationToken);
         }
     }
 }
