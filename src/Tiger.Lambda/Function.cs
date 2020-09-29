@@ -57,7 +57,7 @@ namespace Tiger.Lambda
                 .ConfigureHostConfiguration(config => config.AddInMemoryCollection(new[]
                 {
                     // todo(cosborn) Is it really impossible to set a single configuration key directly???
-                    KeyValuePair.Create(ApplicationKey, GetType().GetTypeInfo().Assembly.GetName().Name)
+                    KeyValuePair.Create(ApplicationKey, GetType().Assembly.GetName().Name)
                 }));
             return ConfigureHostBuilder(hostBuilder)
                 .ConfigureServices(ConfigureServices)

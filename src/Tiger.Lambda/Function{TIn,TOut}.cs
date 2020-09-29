@@ -61,8 +61,8 @@ namespace Tiger.Lambda
                     scope.ServiceProvider,
                     cts.Token).ConfigureAwait(false);
             }
-            catch (TaskCanceledException tce)
-            {
+            catch (TaskCanceledException tce) when (tce.CancellationToken == cts.Token)
+            { // note(cosborn) Other timeouts can go into the catch-all handler.
                 _ = warningRegistration.Unregister();
                 logger?.Canceled(tce);
                 throw;
