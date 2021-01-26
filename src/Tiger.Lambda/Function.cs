@@ -28,9 +28,10 @@ namespace Tiger.Lambda
     /// <summary>The base class and entry point of AWS Lambda Functions.</summary>
     public abstract class Function
     {
-        internal static TimeSpan CancellationLeadTime = TimeSpan.FromMilliseconds(500);
-
         IHost? _host;
+
+        /// <summary>Gets the cancellation lead time.</summary>
+        internal static TimeSpan CancellationLeadTime { get; } = TimeSpan.FromMilliseconds(500);
 
         /// <summary>Gets the application host.</summary>
         internal IHost Host => LazyInitializer.EnsureInitialized(ref _host, InitializeHost);
@@ -57,7 +58,7 @@ namespace Tiger.Lambda
                 .ConfigureHostConfiguration(config => config.AddInMemoryCollection(new[]
                 {
                     // todo(cosborn) Is it really impossible to set a single configuration key directly???
-                    KeyValuePair.Create(ApplicationKey, GetType().Assembly.GetName().Name)
+                    KeyValuePair.Create(ApplicationKey, GetType().Assembly.GetName().Name),
                 }));
             return ConfigureHostBuilder(hostBuilder)
                 .ConfigureServices(ConfigureServices)

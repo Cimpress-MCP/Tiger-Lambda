@@ -43,7 +43,10 @@ namespace Tiger.Lambda
         /// <exception cref="ArgumentNullException"><paramref name="context"/> is <see langword="null"/>.</exception>
         public async Task<TOut> HandleAsync([DisallowNull] TIn input, ILambdaContext context)
         {
-            if (context is null) { throw new ArgumentNullException(nameof(context)); }
+            if (context is null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
 
             using var scope = Host.Services.CreateScope();
 
@@ -75,6 +78,15 @@ namespace Tiger.Lambda
             }
         }
 
+        /// <summary>The inner handler for Lambda Function invocations.</summary>
+        /// <param name="input">The input to the Function.</param>
+        /// <param name="context">The context of this execution of the Function.</param>
+        /// <param name="serviceProvider">The application's provider of functional services.</param>
+        /// <param name="cancellationToken">A token to watch for operation cancellation.</param>
+        /// <returns>
+        /// A task which, when resolved, results in the output from the Function.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">The handler is misconfigured.</exception>
         [DebuggerHidden]
         internal virtual Task<TOut> HandleCoreAsync(
             [DisallowNull] TIn input,

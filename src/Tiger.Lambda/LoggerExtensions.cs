@@ -25,20 +25,20 @@ namespace Tiger.Lambda
     /// <summary>Extensions to the functionality of the <see cref="ILogger"/> interface.</summary>
     static class LoggerExtensions
     {
-        static readonly Func<ILogger, string, IDisposable> _handlingScope = LoggerMessage.DefineScope<string>(
+        static readonly Func<ILogger, string, IDisposable> s_handlingScope = LoggerMessage.DefineScope<string>(
             Resources.Handling);
 
-        static readonly Action<ILogger, Type, Exception?> _unhandledException = LoggerMessage.Define<Type>(
+        static readonly Action<ILogger, Type, Exception?> s_unhandledException = LoggerMessage.Define<Type>(
             Error,
             new EventId(1, nameof(UnhandledException)),
             Resources.UnhandledException);
 
-        static readonly Action<ILogger, Exception?> _canceled = LoggerMessage.Define(
+        static readonly Action<ILogger, Exception?> s_canceled = LoggerMessage.Define(
             Error,
             new EventId(2, nameof(Canceled)),
             Resources.Canceled);
 
-        static readonly Action<ILogger, Exception?> _nearlyOutOfTime = LoggerMessage.Define(
+        static readonly Action<ILogger, Exception?> s_nearlyOutOfTime = LoggerMessage.Define(
             Error,
             new EventId(3, nameof(NearlyOutOfTime)),
             Resources.NearlyOutOfTime);
@@ -48,7 +48,7 @@ namespace Tiger.Lambda
         /// <param name="context">The context of the Lambda Function.</param>
         /// <returns>A value which, when disposed, will end the logging scope.</returns>
         public static IDisposable Handling(this ILogger logger, ILambdaContext context) =>
-            _handlingScope(logger, context.AwsRequestId);
+            s_handlingScope(logger, context.AwsRequestId);
 
         /// <summary>
         /// Writes an error log message corresponding to the event of handling's failure.
@@ -57,7 +57,7 @@ namespace Tiger.Lambda
         /// <param name="type">The type of the handler in which the exeption occured.</param>
         /// <param name="exception">The exception thrown as a result of handling's failure.</param>
         public static void UnhandledException(this ILogger logger, Type type, Exception exception) =>
-            _unhandledException(logger, type, exception);
+            s_unhandledException(logger, type, exception);
 
         /// <summary>
         /// Writes an error log message corresponding to the event of a Function's cancellation.
@@ -65,12 +65,12 @@ namespace Tiger.Lambda
         /// <param name="logger">An application logger.</param>
         /// <param name="exception">An exception which was the result of timing out.</param>
         public static void Canceled(this ILogger logger, Exception? exception = null) =>
-            _canceled(logger, exception);
+            s_canceled(logger, exception);
 
         /// <summary>
         /// Writes an error log message corresponding to the event of a Function's imminent termination.
         /// </summary>
         /// <param name="logger">An application logger.</param>
-        public static void NearlyOutOfTime(this ILogger logger) => _nearlyOutOfTime(logger, null);
+        public static void NearlyOutOfTime(this ILogger logger) => s_nearlyOutOfTime(logger, null);
     }
 }

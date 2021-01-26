@@ -24,6 +24,10 @@ namespace Tiger.Lambda
     /// <summary>Extensions to the functionality of the <see cref="IServiceProvider"/> interface.</summary>
     static class ServiceProviderExtensions
     {
+        /// <summary>Gets the handler for the provided type.</summary>
+        /// <typeparam name="TIn">The input type for which to construct a handler.</typeparam>
+        /// <param name="serviceProvider">The service provider from which to construct a handler.</param>
+        /// <returns>A handler for <typeparamref name="TIn"/>.</returns>
         public static IHandler<TIn> GetHandler<TIn>(this IServiceProvider serviceProvider)
         {
             try
@@ -37,6 +41,11 @@ namespace Tiger.Lambda
             }
         }
 
+        /// <summary>Gets the handler for the provided types.</summary>
+        /// <typeparam name="TIn">The input type for which to construct a handler.</typeparam>
+        /// <typeparam name="TOut">The output type for which to construct a handler.</typeparam>
+        /// <param name="serviceProvider">The service provider from which to construct a handler.</param>
+        /// <returns>A handler for <typeparamref name="TIn"/> and <typeparamref name="TOut"/>.</returns>
         public static IHandler<TIn, TOut> GetHandler<TIn, TOut>(this IServiceProvider serviceProvider)
         {
             try
@@ -50,6 +59,10 @@ namespace Tiger.Lambda
             }
         }
 
+        /// <summary>Gets a logger for the provided type.</summary>
+        /// <param name="serviceProvider">The service provider from which to construct a logger.</param>
+        /// <param name="type">The type for which to construct a logger.</param>
+        /// <returns>A logger, or <see langword="null"/>.</returns>
         public static ILogger? GetLogger(this IServiceProvider serviceProvider, Type type) =>
             serviceProvider.GetService<ILoggerFactory>()?.CreateLogger(type);
     }
