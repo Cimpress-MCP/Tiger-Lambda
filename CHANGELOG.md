@@ -1,4 +1,8 @@
-### What's new in 4.0.0 (Released ????-??-??)
+### What's new in 4.0.1 (Released 2021-01-26)
+
+* The library's compatibility has been greatly widened.
+
+### What's new in 4.0.0 (Released 2020-09-XX)
 
 * Handlers now accept a cancellation token.
   * The cancellation tokens are synthesized by the library; they will be canceled when approximately 500ms remain in the Function execution.

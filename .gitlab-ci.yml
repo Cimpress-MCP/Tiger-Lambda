@@ -1,4 +1,4 @@
-image: mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
+image: mcr.microsoft.com/dotnet/sdk:5.0-alpine
 
 stages:
 - build
@@ -7,11 +7,13 @@ stages:
 
 variables:
   CONFIGURATION: Release
+  GIT_STRATEGY: clone
 
 build:
   stage: build
   script:
-  - dotnet build
+  - dotnet build -property:ContinuousIntegrationBuild=true
+
   cache: &cache_template
     key: ${CI_COMMIT_REF_SLUG}
     paths:
@@ -21,7 +23,7 @@ build:
 pack:
   stage: pack
   script:
-  - dotnet pack --output ./dist/
+  - dotnet pack --output "$(pwd)/dist/"
   cache:
     <<: *cache_template
     policy: pull
@@ -32,7 +34,7 @@ pack:
 deploy:
   stage: deploy
   script:
-  - dotnet nuget push ./dist/*.nupkg --api-key "${NUGET_API_KEY}"
+  - dotnet nuget push --api-key "${NUGET_API_KEY}" ./dist/*.nupkg
   only:
     refs:
     - main
