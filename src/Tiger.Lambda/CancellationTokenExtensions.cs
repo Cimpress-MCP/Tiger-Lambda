@@ -22,6 +22,10 @@ namespace Tiger.Lambda
     /// <summary>Extensions to the funcitonality of the <see cref="CancellationToken"/> struct.</summary>
     static class CancellationTokenExtensions
     {
+        /// <summary>Registers the nearly-out-of-time warning.</summary>
+        /// <param name="cancellationToken">The cancellation token on which to register the warning.</param>
+        /// <param name="logger">The logger which will log the warning.</param>
+        /// <returns>The registration token with which to cancel the warning.</returns>
         public static CancellationTokenRegistration RegisterWarning(
             this CancellationToken cancellationToken,
             ILogger? logger) => cancellationToken.Register(
