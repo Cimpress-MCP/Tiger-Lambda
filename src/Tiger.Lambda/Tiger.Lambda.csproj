@@ -6,10 +6,6 @@
     <AssemblyTitle>Tiger Lambda</AssemblyTitle>
     <VersionPrefix>4.0.1</VersionPrefix>
     <Authors>cosborn@cimpress.com</Authors>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Nullable>enable</Nullable>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <AssemblyName>Tiger.Lambda</AssemblyName>
     <PackageId>Tiger.Lambda</PackageId>
     <PackageTags>lambda;host;aws;amazon;lambda-function</PackageTags>
@@ -36,15 +32,14 @@
   <Import Project="Tiger.Lambda.props" />
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" Version="1.2.0" />
-    <PackageReference Include="Amazon.Lambda.SQSEvents" Version="1.2.0" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.0.0" />
+    <PackageReference Include="Amazon.Lambda.SQSEvents" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.0" />
-    <PackageReference Include="Tiger.Secrets" Version="2.1.1" />
 
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
-    <PackageReference Include="Roslynator.Analyzers" Version="3.0.0" PrivateAssets="all" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.321" PrivateAssets="all" />
+    <PackageReference Include="Roslynator.Analyzers" Version="3.2.0" PrivateAssets="all" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

@@ -37,7 +37,7 @@ namespace Tiger.Lambda
         /// A task which, when resolved, represents completion of the Function.
         /// </returns>
         Task HandleAsync(
-            [DisallowNull] TIn input,
+            TIn input,
             ILambdaContext context,
             CancellationToken cancellationToken = default);
     }

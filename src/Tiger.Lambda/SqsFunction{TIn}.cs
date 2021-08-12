@@ -42,13 +42,13 @@ namespace Tiger.Lambda
         /// <inheritdoc/>
         [DebuggerHidden]
         internal sealed override async Task<object?> HandleCoreAsync(
-            [DisallowNull] SQSEvent input,
+            SQSEvent input,
             ILambdaContext context,
             IServiceProvider serviceProvider,
             CancellationToken cancellationToken)
         {
             var handler = serviceProvider.GetHandler<IEnumerable<TIn>>();
-            var jsonOpts = serviceProvider.GetService<IOptions<JsonSerializerOptions>>();
+            var jsonOpts = serviceProvider.GetService<IOptionsSnapshot<JsonSerializerOptions>>();
             var records = input
                 .Records
                 .Select(r => r.Body)

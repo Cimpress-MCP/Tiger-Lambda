@@ -35,7 +35,7 @@ namespace Tiger.Lambda
         /// <inheritdoc/>
         [DebuggerHidden]
         internal override async Task<object?> HandleCoreAsync(
-            [DisallowNull] TIn input,
+            TIn input,
             ILambdaContext context,
             IServiceProvider serviceProvider,
             CancellationToken cancellationToken)

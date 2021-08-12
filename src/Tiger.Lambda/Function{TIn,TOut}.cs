@@ -41,7 +41,7 @@ namespace Tiger.Lambda
         /// </returns>
         /// <exception cref="InvalidOperationException">The handler is misconfigured.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="context"/> is <see langword="null"/>.</exception>
-        public async Task<TOut> HandleAsync([DisallowNull] TIn input, ILambdaContext context)
+        public async Task<TOut> HandleAsync(TIn input, ILambdaContext context)
         {
             if (context is null)
             {
@@ -89,7 +89,7 @@ namespace Tiger.Lambda
         /// <exception cref="InvalidOperationException">The handler is misconfigured.</exception>
         [DebuggerHidden]
         internal virtual Task<TOut> HandleCoreAsync(
-            [DisallowNull] TIn input,
+            TIn input,
             ILambdaContext context,
             IServiceProvider serviceProvider,
             CancellationToken cancellationToken)
