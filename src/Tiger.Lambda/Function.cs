@@ -1,5 +1,5 @@
 // <copyright file="Function.cs" company="Cimpress, Inc.">
-//   Copyright 2020 Cimpress, Inc.
+//   Copyright 2021 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
 //   you may not use this file except in compliance with the License.
@@ -15,30 +15,30 @@
 // </copyright>
 
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using static Microsoft.Extensions.Hosting.HostDefaults;
+using Host = Microsoft.Extensions.Hosting.Host;
 
 namespace Tiger.Lambda
 {
     /// <summary>The base class and entry point of AWS Lambda Functions.</summary>
     public abstract class Function
     {
-        IHost? _host;
+        /// <summary>Initializes a new instance of the <see cref="Function"/> class.</summary>
+        internal Function()
+        {
+            ServiceProvider = InitializeServiceProvider();
+        }
 
         /// <summary>Gets the cancellation lead time.</summary>
         internal static TimeSpan CancellationLeadTime { get; } = TimeSpan.FromMilliseconds(500);
 
-        /// <summary>Gets the application host.</summary>
-        internal IHost Host => LazyInitializer.EnsureInitialized(ref _host, InitializeHost);
+        /// <summary>Gets the application service provider.</summary>
+        internal IServiceProvider ServiceProvider { get; }
 
         /// <summary>Creates the host builder for the application.</summary>
         /// <returns>A host builder.</returns>
-        public virtual IHostBuilder CreateHostBuilder() => LambdaHost.CreateDefaultBuilder();
+        public virtual IHostBuilder CreateHostBuilder() => Host.CreateDefaultBuilder();
 
         /// <summary>Configures the host builder for the application.</summary>
         /// <param name="hostBuilder">The host builder.</param>
@@ -52,17 +52,7 @@ namespace Tiger.Lambda
             HostBuilderContext context,
             IServiceCollection services);
 
-        IHost InitializeHost()
-        {
-            var hostBuilder = CreateHostBuilder()
-                .ConfigureHostConfiguration(config => config.AddInMemoryCollection(new[]
-                {
-                    // todo(cosborn) Is it really impossible to set a single configuration key directly???
-                    KeyValuePair.Create(ApplicationKey, GetType().Assembly.GetName().Name),
-                }));
-            return ConfigureHostBuilder(hostBuilder)
-                .ConfigureServices(ConfigureServices)
-                .Build();
-        }
+        IServiceProvider InitializeServiceProvider() =>
+            ConfigureHostBuilder(CreateHostBuilder()).ConfigureServices(ConfigureServices).Build().Services;
     }
 }

@@ -1,5 +1,5 @@
 // <copyright file="Function{TIn}.cs" company="Cimpress, Inc.">
-//   Copyright 2020 Cimpress, Inc.
+//   Copyright 2021 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
 //   you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Tiger.Lambda
 {
