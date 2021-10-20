@@ -1,70 +1,23 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>Simplifies the configuration and initialization of AWS Lambda Functions.</Description>
-    <Copyright>©Cimpress 2020</Copyright>
     <AssemblyTitle>Tiger Lambda</AssemblyTitle>
-    <VersionPrefix>4.0.1</VersionPrefix>
-    <Authors>cosborn@cimpress.com</Authors>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Nullable>enable</Nullable>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <AssemblyName>Tiger.Lambda</AssemblyName>
-    <PackageId>Tiger.Lambda</PackageId>
-    <PackageTags>lambda;host;aws;amazon;lambda-function</PackageTags>
-    <PackageReleaseNotes><![CDATA[➟ Release 4.0.1
-⁃ The library's compatibility has been greatly widened.
-
-➟ Release 4.0.0
-⁃ Handlers now accept a cancellation token.
-  ⁃ The cancellation tokens are synthesized by the library; they will be canceled when appoximately 500ms remain in the Function execution.
-  ⁃ This value is not yet configurable.
-⁃ Special types have been added for handling SQS events serialized to JSON.
-]]></PackageReleaseNotes>
-    <PackageProjectUrl>https://github.com/Cimpress-MCP/Tiger-Lambda</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageIcon>./tiger_logo.png</PackageIcon>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/Cimpress-MCP/Tiger-Lambda.git</RepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
-  <Import Project="Tiger.Lambda.props" />
+  <Import Project="Package.props" />
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" Version="1.2.0" />
-    <PackageReference Include="Amazon.Lambda.SQSEvents" Version="1.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.0" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.0.0" />
+    <PackageReference Include="Amazon.Lambda.SQSEvents" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.0" />
-    <PackageReference Include="Tiger.Secrets" Version="2.1.1" />
 
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
-    <PackageReference Include="Roslynator.Analyzers" Version="3.0.0" PrivateAssets="all" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.321" PrivateAssets="all" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="../../stylecop.json" />
     <None Include="../../tiger_logo.png" Pack="true" PackagePath="" />
-    <Content Include="Tiger.Lambda.targets">
-      <PackagePath>build/</PackagePath>
-    </Content>
-    <Content Include="Tiger.Lambda.props">
-      <PackagePath>build/</PackagePath>
-    </Content>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <Content Include="Tiger.Lambda.targets" PackagePath="build/" />
+    <Content Include="Tiger.Lambda.props" PackagePath="build/" />
   </ItemGroup>
 
 </Project>

@@ -1,15 +1,8 @@
 <Project>
 
   <PropertyGroup>
-    <LangVersion>latest</LangVersion>
-    <DebugType>portable</DebugType>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <Deterministic>true</Deterministic>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <!-- note(cosborn) whips and chains -->
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <Features>strict</Features>
   </PropertyGroup>
  
 </Project>

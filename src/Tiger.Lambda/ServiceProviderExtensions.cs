@@ -1,5 +1,5 @@
 // <copyright file="ServiceProviderExtensions.cs" company="Cimpress, Inc.">
-//   Copyright 2020 Cimpress, Inc.
+//   Copyright 2021 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
 //   you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using static Tiger.Lambda.Properties.Resources;
+using static Tiger.Lambda.Resources;
 
 namespace Tiger.Lambda
 {
