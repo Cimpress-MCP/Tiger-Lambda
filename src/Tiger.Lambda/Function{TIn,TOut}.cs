@@ -1,5 +1,5 @@
 // <copyright file="Function{TIn,TOut}.cs" company="Cimpress, Inc.">
-//   Copyright 2020 Cimpress, Inc.
+//   Copyright 2021 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
 //   you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
@@ -41,21 +40,21 @@ namespace Tiger.Lambda
         /// </returns>
         /// <exception cref="InvalidOperationException">The handler is misconfigured.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="context"/> is <see langword="null"/>.</exception>
-        public async Task<TOut> HandleAsync([DisallowNull] TIn input, ILambdaContext context)
+        public async Task<TOut> HandleAsync(TIn input, ILambdaContext context)
         {
             if (context is null)
             {
                 throw new ArgumentNullException(nameof(context));
             }
 
-            using var scope = Host.Services.CreateScope();
+            using var scope = ServiceProvider.CreateScope();
 
             var logger = scope.ServiceProvider.GetLogger(GetType());
             using var handlingScope = logger?.Handling(context);
 
             using var cts = new CancellationTokenSource(context.RemainingTime - CancellationLeadTime);
-            using var warningRegistration = cts.Token.RegisterWarning(logger);
-
+            await using var warningRegistration = cts.Token.RegisterWarning(logger);
+            await using var @finally = warningRegistration.ConfigureAwait(false);
             try
             {
                 return await HandleCoreAsync(
@@ -89,7 +88,7 @@ namespace Tiger.Lambda
         /// <exception cref="InvalidOperationException">The handler is misconfigured.</exception>
         [DebuggerHidden]
         internal virtual Task<TOut> HandleCoreAsync(
-            [DisallowNull] TIn input,
+            TIn input,
             ILambdaContext context,
             IServiceProvider serviceProvider,
             CancellationToken cancellationToken)

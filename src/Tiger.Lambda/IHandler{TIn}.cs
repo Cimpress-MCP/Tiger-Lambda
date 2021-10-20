@@ -1,5 +1,5 @@
 // <copyright file="IHandler{TIn}.cs" company="Cimpress, Inc.">
-//   Copyright 2020 Cimpress, Inc.
+//   Copyright 2021 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
 //   you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 //   limitations under the License.
 // </copyright>
 
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
@@ -37,7 +36,7 @@ namespace Tiger.Lambda
         /// A task which, when resolved, represents completion of the Function.
         /// </returns>
         Task HandleAsync(
-            [DisallowNull] TIn input,
+            TIn input,
             ILambdaContext context,
             CancellationToken cancellationToken = default);
     }

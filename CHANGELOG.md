@@ -1,3 +1,10 @@
+### What's new in 5.0.0 (Released 2021-10-20)
+
+* The library now uses Microsoft's default Host and Host Builder by default.
+  * Due to the limitations of AWS Lambda, this requires setting the environment variable `HOME` to any extant directory.
+  * We recommend "/var/task" as the default choice.
+* The log message for imminent termination has been lowered to a warning.
+
 ### What's new in 4.0.1 (Released 2021-01-26)
 
 * The library's compatibility has been greatly widened.

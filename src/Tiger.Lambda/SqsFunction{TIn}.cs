@@ -1,5 +1,5 @@
 // <copyright file="SqsFunction{TIn}.cs" company="Cimpress, Inc.">
-//   Copyright 2020 Cimpress, Inc.
+//   Copyright 2021 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
 //   you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -42,17 +41,17 @@ namespace Tiger.Lambda
         /// <inheritdoc/>
         [DebuggerHidden]
         internal sealed override async Task<object?> HandleCoreAsync(
-            [DisallowNull] SQSEvent input,
+            SQSEvent input,
             ILambdaContext context,
             IServiceProvider serviceProvider,
             CancellationToken cancellationToken)
         {
-            var handler = serviceProvider.GetHandler<IEnumerable<TIn>>();
-            var jsonOpts = serviceProvider.GetService<IOptions<JsonSerializerOptions>>();
+            var jsonOpts = serviceProvider.GetService<IOptionsSnapshot<JsonSerializerOptions>>();
             var records = input
                 .Records
                 .Select(r => r.Body)
                 .Select(b => JsonSerializer.Deserialize<TIn>(b, jsonOpts?.Value));
+            var handler = serviceProvider.GetHandler<IEnumerable<TIn>>();
             await handler.HandleAsync(records, context, cancellationToken).ConfigureAwait(false);
             return default;
         }
