@@ -1,4 +1,4 @@
-﻿// <copyright file="Resources.cs" company="Cimpress, Inc.">
+// <copyright file="Resources.cs" company="Cimpress, Inc.">
 //   Copyright 2021 Cimpress, Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License") –
@@ -16,37 +16,35 @@
 
 using System.ComponentModel;
 using System.Resources;
-using System.Threading;
 using static System.ComponentModel.EditorBrowsableState;
 
-namespace Tiger.Lambda
+namespace Tiger.Lambda;
+
+/// <summary>A strongly typed resource class for looking up localized strings, etc.</summary>
+static class Resources
 {
-    /// <summary>A strongly typed resource class for looking up localized strings, etc.</summary>
-    static class Resources
-    {
-        static ResourceManager? s_resourceManager;
-        static object s_resourceManagerLock = new();
+    static ResourceManager? s_resourceManager;
+    static object s_resourceManagerLock = new();
 
-        /// <summary>Gets the cached <see cref="ResourceManager"/> instance used by this class.</summary>
-        [EditorBrowsable(Advanced)]
-        public static ResourceManager ResourceManager => LazyInitializer.EnsureInitialized(
-            ref s_resourceManager,
-            ref s_resourceManagerLock,
-            () => new ResourceManager("Tiger.Lambda.Resources", typeof(Resources).Assembly));
+    /// <summary>Gets the cached <see cref="ResourceManager"/> instance used by this class.</summary>
+    [EditorBrowsable(Advanced)]
+    public static ResourceManager ResourceManager => LazyInitializer.EnsureInitialized(
+        ref s_resourceManager,
+        ref s_resourceManagerLock,
+        () => new ResourceManager("Tiger.Lambda.Resources", typeof(Resources).Assembly));
 
-        /// <summary>Gets a message indicating a handler misconfiguration.</summary>
-        public static string HandlerIsMisconfigured => ResourceManager.GetString(nameof(HandlerIsMisconfigured), null)!;
+    /// <summary>Gets a message indicating a handler misconfiguration.</summary>
+    public static string HandlerIsMisconfigured => ResourceManager.GetString(nameof(HandlerIsMisconfigured), null)!;
 
-        /// <summary>Gets a message indicating an unhandled exception.</summary>
-        public static string UnhandledException => ResourceManager.GetString(nameof(UnhandledException), null)!;
+    /// <summary>Gets a message indicating an unhandled exception.</summary>
+    public static string UnhandledException => ResourceManager.GetString(nameof(UnhandledException), null)!;
 
-        /// <summary>Gets a message indicating that an execution handling has begun.</summary>
-        public static string Handling => ResourceManager.GetString(nameof(Handling), null)!;
+    /// <summary>Gets a message indicating that an execution handling has begun.</summary>
+    public static string Handling => ResourceManager.GetString(nameof(Handling), null)!;
 
-        /// <summary>Gets a message indicating that an execution is nearly out of time.</summary>
-        public static string NearlyOutOfTime => ResourceManager.GetString(nameof(NearlyOutOfTime), null)!;
+    /// <summary>Gets a message indicating that an execution is nearly out of time.</summary>
+    public static string NearlyOutOfTime => ResourceManager.GetString(nameof(NearlyOutOfTime), null)!;
 
-        /// <summary>Gets a message indicating that an execution has been canceled.</summary>
-        public static string Canceled => ResourceManager.GetString(nameof(Canceled), null)!;
-    }
+    /// <summary>Gets a message indicating that an execution has been canceled.</summary>
+    public static string Canceled => ResourceManager.GetString(nameof(Canceled), null)!;
 }

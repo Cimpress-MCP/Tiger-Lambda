@@ -14,31 +14,17 @@
 //   limitations under the License.
 // </copyright>
 
-using System.Threading;
-using System.Threading.Tasks;
-using Amazon.Lambda.Core;
+namespace Tiger.Lambda;
 
-namespace Tiger.Lambda
+/// <summary>Handles AWS Lambda Function invocations which return a value.</summary>
+/// <typeparam name="TIn">The type of the input to the Function.</typeparam>
+/// <typeparam name="TOut">The type of the output from the Function.</typeparam>
+public interface IHandler<TIn, TOut>
 {
-    /// <summary>
-    /// Handles AWS Lambda Function invocations which return a value.
-    /// </summary>
-    /// <typeparam name="TIn">The type of the input to the Function.</typeparam>
-    /// <typeparam name="TOut">The type of the output from the Function.</typeparam>
-    public interface IHandler<TIn, TOut>
-    {
-        /// <summary>
-        /// Handles an AWS Lambda Function invocation which returns a value.
-        /// </summary>
-        /// <param name="input">The input to the Function.</param>
-        /// <param name="context">The context of this execution of the Function.</param>
-        /// <param name="cancellationToken">A token to wach for operation cancellation.</param>
-        /// <returns>
-        /// A task which, when resolved, results in the output from the Function.
-        /// </returns>
-        Task<TOut> HandleAsync(
-            TIn input,
-            ILambdaContext context,
-            CancellationToken cancellationToken = default);
-    }
+    /// <summary>Handles an AWS Lambda Function invocation which returns a value.</summary>
+    /// <param name="input">The input to the Function.</param>
+    /// <param name="context">The context of this execution of the Function.</param>
+    /// <param name="cancellationToken">A token to wach for operation cancellation.</param>
+    /// <returns>A task which, when resolved, results in the output from the Function.</returns>
+    ValueTask<TOut> HandleAsync(TIn input, ILambdaContext context, CancellationToken cancellationToken = default);
 }

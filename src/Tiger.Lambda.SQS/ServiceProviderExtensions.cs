@@ -14,7 +14,7 @@
 //   limitations under the License.
 // </copyright>
 
-namespace Tiger.Lambda;
+namespace Tiger.Lambda.Sqs;
 
 /// <summary>Extensions to the functionality of the <see cref="IServiceProvider"/> interface.</summary>
 static class ServiceProviderExtensions
@@ -36,30 +36,4 @@ static class ServiceProviderExtensions
             throw new InvalidOperationException(HandlerIsMisconfigured, ioe);
         }
     }
-
-    /// <summary>Gets the handler for the provided types.</summary>
-    /// <typeparam name="TIn">The input type for which to construct a handler.</typeparam>
-    /// <typeparam name="TOut">The output type for which to construct a handler.</typeparam>
-    /// <param name="serviceProvider">The service provider from which to construct a handler.</param>
-    /// <returns>A handler for <typeparamref name="TIn"/> and <typeparamref name="TOut"/>.</returns>
-    /// <exception cref="InvalidOperationException">The handler could not be resolved due to misconfiguration.</exception>
-    public static IHandler<TIn, TOut> GetHandler<TIn, TOut>(this IServiceProvider serviceProvider)
-    {
-        try
-        {
-            return serviceProvider.GetRequiredService<IHandler<TIn, TOut>>();
-        }
-        catch (InvalidOperationException ioe)
-        {
-            // note(cosborn) Let's make the error message nicer.
-            throw new InvalidOperationException(HandlerIsMisconfigured, ioe);
-        }
-    }
-
-    /// <summary>Gets a logger for the provided type.</summary>
-    /// <param name="serviceProvider">The service provider from which to construct a logger.</param>
-    /// <param name="type">The type for which to construct a logger.</param>
-    /// <returns>A logger, or <see langword="null"/>.</returns>
-    public static ILogger GetLogger(this IServiceProvider serviceProvider, Type type) =>
-        serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(type);
 }

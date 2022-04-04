@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Simplifies the configuration and initialization of AWS Lambda Functions for Simple Queue Service.</Description>
+    <AssemblyTitle>Tiger Lambda (SQS)</AssemblyTitle>
+    <AssemblyName>Tiger.Lambda.SQS</AssemblyName>
+  </PropertyGroup>
+
+  <Import Project="Package.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.SQSEvents" Version="2.1.0" />
+    <PackageReference Include="System.Interactive.Async" Version="6.0.1" />
+
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="all" />
+
+    <ProjectReference Include="../Tiger.Lambda/Tiger.Lambda.csproj" PrivateAssets="none" />
+
+    <Using Include="Amazon.Lambda.Core" />
+    <Using Include="Amazon.Lambda.SQSEvents" />
+    <Using Include="Amazon.Lambda.SQSEvents.SQSBatchResponse" Static="true"/>
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Extensions.Hosting" />
+    <Using Include="Microsoft.Extensions.Options" />
+    <Using Include="System.Text.Json" />
+    <Using Include="Tiger.Lambda.Resources" Static="true" />
+  </ItemGroup>
+
+</Project>

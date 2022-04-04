@@ -14,16 +14,16 @@
 //   limitations under the License.
 // </copyright>
 
-namespace Tiger.Lambda;
+namespace Tiger.Lambda.Sqs;
 
 /// <summary>Handles AWS Lambda Function invocations which perform an action.</summary>
 /// <typeparam name="TIn">The type of the input to the Function.</typeparam>
 public interface IHandler<TIn>
 {
-    /// <summary>Handles an AWS Lambda Function invocation which returns a value.</summary>
+    /// <summary>Handles an AWS Lambda Function batched SQS invocation.</summary>
     /// <param name="input">The input to the Function.</param>
     /// <param name="context">The context of this execution of the Function.</param>
     /// <param name="cancellationToken">A token to wach for operation cancellation.</param>
-    /// <returns>A task which, when resolved, represents completion of the Function.</returns>
-    ValueTask HandleAsync(TIn input, ILambdaContext context, CancellationToken cancellationToken = default);
+    /// <returns>An asynchronous generator of the unique identifier of messages in the batch which failed.</returns>
+    public IAsyncEnumerable<string> HandleAsync(IEnumerable<Message<TIn>> input, ILambdaContext context, CancellationToken cancellationToken = default);
 }

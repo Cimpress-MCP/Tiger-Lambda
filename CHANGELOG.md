@@ -1,3 +1,10 @@
+### What's new in 6.0.0 (Released 2021-04-07)
+
+* The library's preferred structure for entry points and handlers has been everted. Please see the README for an example.
+* The framework can now distinguish between cancellation tokens, so cancellations due to cancellation lead time can be reported specifically.
+* Speaking of cancellation lead time, it can now be set in configuration by means of the `HostOptions` type.
+* SQS-related functionality has been split into a new package, Tiger.Lambda.SQS.
+
 ### What's new in 5.0.0 (Released 2021-10-20)
 
 * The library now uses Microsoft's default Host and Host Builder by default.

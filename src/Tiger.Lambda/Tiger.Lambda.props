@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <Deterministic>true</Deterministic>
   </PropertyGroup>
  
 </Project>
