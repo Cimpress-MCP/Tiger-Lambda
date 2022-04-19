@@ -9,15 +9,26 @@
   <Import Project="Package.props" />
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.0.0" />
-    <PackageReference Include="Amazon.Lambda.SQSEvents" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.0" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
 
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="all" />
 
-    <None Include="../../tiger_logo.png" Pack="true" PackagePath="" />
-    <Content Include="Tiger.Lambda.targets" PackagePath="build/" />
-    <Content Include="Tiger.Lambda.props" PackagePath="build/" />
+    <Using Include="Amazon.Lambda.Core" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Extensions.Hosting" />
+    <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="Microsoft.Extensions.Logging.LogLevel" Static="true" />
+    <Using Include="Microsoft.Extensions.Options" />
+    <Using Include="System.Diagnostics" />
+    <Using Include="System.Runtime.CompilerServices" />
+    <Using Include="System.Text.Json" />
+    <Using Include="Tiger.Lambda.Resources" Static="true" />
+
+    <AssemblyAttribute Include="InternalsVisibleTo">
+      <_Parameter1>Tiger.Lambda.SQS</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
 
 </Project>

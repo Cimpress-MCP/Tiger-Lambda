@@ -20,44 +20,49 @@ Even appsettings files are supported.
 ## How To Use It
 
 The concept of a function handler is exposed to dependency injection as a type `IHandler<TIn, TOut>`.
-This handler's `Task<TOut> HandleAsync(TIn,ILambdaContext)` method will be called after asking DI for an instance satisfying `IHandler<TIn, TOut>`.
+This handler's `Task<TOut> HandleAsync(TIn,ILambdaContext,CancellationToken)` method will be called
+after asking DI for an instance satisfying `IHandler<TIn, TOut>`.
 The following _extremely simplified_ example illustrates a basic setup.
 
 ```csharp
 namespace Example
 {
   public sealed class PerformAction
-    : Function<string, int>
+    : IHandler<string, int>
   {
-    public override void ConfigureServices(HostBuilderContext context, IServiceCollection services) => services
-      .AddSingleton<IValueGetter, HttpValueGetter>()
-      .AddScoped<IHandler<string, int>, Handler>();
+    readonly IValueGetter _valueGetter;
+
+    public Handler(IValueGetter valueGetter)
+    {
+      _valueGetter = valueGetter;
+    }
+
+    public async Task<int> HandleAsync(string input, ILambdaContext context, CancellationToken cancellationToken = default)
+    {
+      var value = await _valueGetter
+        .GetValue(input, cancellationToken)
+        .ConfigureAwait(false);
+
+      return value;
+    }
 
     // This may of course exist in another file, if desired.
-    public sealed class Handler
-      : IHandler<string, int>
+    public sealed class EntryPoint
+      : EntryPoint<string, int>
     {
-      readonly IValueGetter _valueGetter;
-
-      public Handler(IValueGetter valueGetter)
+      public override void ConfigureServices(HostBuilderContext context, IServiceCollection services)
       {
-        _valueGetter = valueGetter;
-      }
-
-      public async Task<int> HandleAsync(string input, ILambdaContext context)
-      {
-        var value = await _valueGetter.GetValue(input).ConfigureAwait(false);
-
-        return value;
+        base.ConfigureServices(context, services);
+        _ = services.AddSingleton<IValueGetter, HttpValueGetter>();
       }
     }
   }
 }
 ```
 
-The lambda's entry point is the `Task<TOut> HandleAsync(TIn,ILambdaContext)` method of the class inheriting from `Function<TIn, TOut>`.
+The lambda's entry point is the `Task<TOut> HandleAsync(TIn,ILambdaContext)` method of the entry point class inheriting from `EntryPoint<TIn, TOut>`.
 This can be set in Lambda configuration in the usual fashion.
-For the example above, it would resemble "Documentation::Example.PerformAction::HandleAsync".
+For the example above, it would resemble "Documentation::Example.PerformAction+EntryPoint::HandleAsync".
 
 ## Thank You
 

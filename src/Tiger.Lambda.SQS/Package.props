@@ -1,0 +1,14 @@
+<Project>
+  
+  <PropertyGroup>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <PackageId>Tiger.Lambda.SQS</PackageId>
+    <PackageTags>lambda;host;aws;amazon;lambda-function;sqs;simple-queue-service</PackageTags>
+    <PackageReleaseNotes><![CDATA[➟ Release 1.0.0
+⁃ Everything is new!
+]]></PackageReleaseNotes>
+  </PropertyGroup>
+
+  <Import Project="../Package.props" />
+
+</Project>
